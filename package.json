@@ -1,0 +1,27 @@
+{
+  "name": "rockpaperscissors",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/neverleaveualong/RockPaperScissors.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/neverleaveualong/RockPaperScissors/issues"
+  },
+  "homepage": "https://github.com/neverleaveualong/RockPaperScissors#readme",
+  "description": "",
+  "dependencies": {
+    "typescript": "^5.8.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.14",
+    "ts-node": "^10.9.2"
+  }
+}
