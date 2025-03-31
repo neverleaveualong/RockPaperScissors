@@ -2,9 +2,15 @@ import { choices } from "./data";
 
 const readlineSync = require("readline-sync");
 
+// 최근 선택
+let recentChoices: number[] = [];
+let MAX_RECENT_CHOICES = 5;
+let MIN_COUNT = 3;
+
 function playChampionship(userName: string): void {
   console.log(`\n챔피언십 모드 시작! 3판 2선승제로 진행됩니다.`);
 
+  recentChoices = [];
   let userWins = 0;
   let computerWins = 0;
 
@@ -21,6 +27,13 @@ function playChampionship(userName: string): void {
       continue;
     }
 
+    recentChoices.push(userChoice);
+    if (recentChoices.length > MAX_RECENT_CHOICES) {
+      recentChoices.shift();
+    }
+
+    checkPattern();
+
     const computerChoice = randomChoice();
     const result = determineWinner(userChoice, computerChoice);
 
@@ -35,12 +48,13 @@ function playChampionship(userName: string): void {
 
   // 최종 승자 결정
   if (userWins === 2) {
-    console.log(`🎉 ${userName}님이 2승을 달성하여 승리했습니다! 🎉\n`);
+    console.log(`${userName}님이 2승을 달성하여 승리했습니다! 🎉\n`);
   } else {
     console.log("컴퓨터가 2승을 달성하여 승리했습니다!\n");
   }
 }
 
+// 기본 게임 시작
 function main(): void {
   // 게임 시작
   console.log("가위 바위 보 게임을 시작합니다!");
@@ -49,7 +63,7 @@ function main(): void {
 
   while (isPlaying) {
     process.stdout.write(
-      "새로운 게임을 시작하려면 '1', 종료하려면 '9'를 입력하세요: "
+      "새로운 게임을 시작하려면 '1', 기록을 보려면 2, 종료하려면 '9'를 입력하세요: "
     );
     const action = readlineSync.question("");
 
@@ -71,7 +85,7 @@ function randomChoice(): number {
   return Math.floor(Math.random() * 3 + 1);
 }
 
-// 승부 선택택
+// 승부 선택
 function determineWinner(userChoice: number, computerChoice: number): string {
   if (userChoice === computerChoice) {
     return "무승부";
@@ -84,6 +98,27 @@ function determineWinner(userChoice: number, computerChoice: number): string {
     return "승리";
   }
   return "패배";
+}
+
+function checkPattern(): void {
+  if (recentChoices.length < MIN_COUNT) return;
+
+  const frequency: Record<number, number> = { 1: 0, 2: 0, 3: 0 };
+
+  recentChoices.forEach((choice) => {
+    frequency[choice]++;
+  });
+
+  for (const [choice, count] of Object.entries(frequency)) {
+    if (count >= 3) {
+      console.log(
+        `\n AI가 패턴을 감지했습니다: 당신은 '${
+          choices[parseInt(choice) - 1]
+        }(${choice})'를 자주 선택합니다.\n`
+      );
+      return;
+    }
+  }
 }
 
 main();
