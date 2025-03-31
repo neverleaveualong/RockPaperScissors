@@ -18,6 +18,7 @@
   "homepage": "https://github.com/neverleaveualong/RockPaperScissors#readme",
   "description": "",
   "dependencies": {
+    "readline-sync": "^1.4.10",
     "typescript": "^5.8.2"
   },
   "devDependencies": {
