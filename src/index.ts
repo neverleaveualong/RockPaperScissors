@@ -2,6 +2,45 @@ import { choices } from "./data";
 
 const readlineSync = require("readline-sync");
 
+function playChampionship(userName: string): void {
+  console.log(`\n챔피언십 모드 시작! 3판 2선승제로 진행됩니다.`);
+
+  let userWins = 0;
+  let computerWins = 0;
+
+  while (userWins < 2 && computerWins < 2) {
+    // 라운드 시작
+    process.stdout.write("가위(1), 바위(2), 보(3) 중 하나를 선택하세요: ");
+    const userChoice = parseInt(readlineSync.question(""));
+
+    // 입력값 검증
+    if (![1, 2, 3].includes(userChoice)) {
+      console.log(
+        "잘못된 입력입니다. 숫자 '1', '2', '3' 중 하나를 입력해주세요.\n"
+      );
+      continue;
+    }
+
+    const computerChoice = randomChoice();
+    const result = determineWinner(userChoice, computerChoice);
+
+    // 점수 업데이트
+    if (result === "승리") userWins++;
+    else if (result === "패배") computerWins++;
+
+    // 결과 출력
+    console.log(`컴퓨터: ${choices[computerChoice - 1]} (${computerChoice})`);
+    console.log(`결과: ${result} (${userWins}:${computerWins})\n`);
+  }
+
+  // 최종 승자 결정
+  if (userWins === 2) {
+    console.log(`🎉 ${userName}님이 2승을 달성하여 승리했습니다! 🎉\n`);
+  } else {
+    console.log("컴퓨터가 2승을 달성하여 승리했습니다!\n");
+  }
+}
+
 function main(): void {
   // 게임 시작
   console.log("가위 바위 보 게임을 시작합니다!");
@@ -9,37 +48,20 @@ function main(): void {
   let isPlaying = true;
 
   while (isPlaying) {
-    process.stdout.write("가위(1), 바위(2), 보(3) 중 하나를 선택하세요: ");
-
-    // 유저 선택택
-    const userChoice = parseInt(readlineSync.question(""));
-
-    // 컴퓨터 선택
-    const computerChoice = randomChoice();
-
-    // 유효성 체크
-    if (![1, 2, 3].includes(userChoice)) {
-      console.log(
-        "잘못된 입력입니다. 숫자 '1', '2', '3' 중 하나를 입려해주세요. "
-      );
-      return;
-    }
-
-    console.log(`컴퓨터: ${choices[computerChoice - 1]} (${computerChoice})`);
-    console.log(`결과: ${determineWinner(userChoice, computerChoice)}!\n`);
-
     process.stdout.write(
       "새로운 게임을 시작하려면 '1', 종료하려면 '9'를 입력하세요: "
     );
-    // 새로운 게임 여부 확인
-    const nextAction = readlineSync.question("");
+    const action = readlineSync.question("");
 
-    if (nextAction === "9") {
+    if (action === "9") {
       console.log("게임을 종료합니다.");
-      isPlaying = false; // 게임 종료
-    } else if (nextAction !== "1") {
-      console.log("잘못된 입력으로 게임을 종료합니다.");
-      isPlaying = false; // 잘못된 입력 시 종료
+      isPlaying = false;
+    } else if (action === "1") {
+      process.stdout.write("이름을 입력해주세요. ");
+      const userName = readlineSync.question("");
+      playChampionship(userName);
+    } else {
+      console.log("잘못된 입력입니다. '1' 또는 '9'를 입력해주세요.");
     }
   }
 }
