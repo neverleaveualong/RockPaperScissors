@@ -7,6 +7,8 @@ let recentChoices: number[] = [];
 let MAX_RECENT_CHOICES = 5;
 let MIN_COUNT = 3;
 
+const playerStats = new Map<string, { wins: number; losses: number }>();
+
 function playChampionship(userName: string): void {
   console.log(`\n챔피언십 모드 시작! 3판 2선승제로 진행됩니다.`);
 
@@ -49,8 +51,10 @@ function playChampionship(userName: string): void {
   // 최종 승자 결정
   if (userWins === 2) {
     console.log(`${userName}님이 2승을 달성하여 승리했습니다! 🎉\n`);
+    updatePlayerStats(userName, userWins, computerWins);
   } else {
     console.log("컴퓨터가 2승을 달성하여 승리했습니다!\n");
+    updatePlayerStats(userName, userWins, computerWins);
   }
 }
 
@@ -74,6 +78,8 @@ function main(): void {
       process.stdout.write("이름을 입력해주세요. ");
       const userName = readlineSync.question("");
       playChampionship(userName);
+    } else if (action === "2") {
+      viewPlayerStats();
     } else {
       console.log("잘못된 입력입니다. '1' 또는 '9'를 입력해주세요.");
     }
@@ -119,6 +125,39 @@ function checkPattern(): void {
       return;
     }
   }
+}
+
+function updatePlayerStats(
+  userName: string,
+  wins: number,
+  losses: number
+): void {
+  const stats = playerStats.get(userName) || { wins: 0, losses: 0 };
+  stats.wins += wins;
+  stats.losses += losses;
+  playerStats.set(userName, stats);
+}
+
+function viewPlayerStats(): void {
+  console.log("\n[승률 랭킹]");
+
+  const playerArray = Array.from(playerStats.entries());
+
+  const rankedPlayers = playerArray.map(([name, stats]) => {
+    const totalGames = stats.wins + stats.losses;
+    const winRate = totalGames > 0 ? (stats.wins / totalGames) * 100 : 0; // 승률 계산
+    return { name, winRate, wins: stats.wins, losses: stats.losses };
+  });
+
+  rankedPlayers.sort((a, b) => b.winRate - a.winRate);
+
+  rankedPlayers.forEach((player, index) => {
+    console.log(
+      `${index + 1}. ${player.name} - ${player.winRate.toFixed(2)}% (${
+        player.wins
+      }승 ${player.losses}패)`
+    );
+  });
 }
 
 main();
